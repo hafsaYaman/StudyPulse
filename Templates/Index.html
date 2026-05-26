@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudyPulse</title>
+  <style>
+    body { font-family: Georgia, serif; max-width: 700px; margin: 40px auto; padding: 0 20px; background: #fafaf8; color: #1a1a1a; }
+    h1 { font-size: 2rem; margin-bottom: 4px; }
+    .streak { font-size: 1rem; color: #666; margin-bottom: 32px; }
+    .streak span { font-weight: bold; color: #e05a00; }
+    h2 { font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.05em; color: #888; margin-bottom: 12px; }
+    .bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+    .bar-label { width: 120px; font-size: 0.9rem; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+    .bar-track { flex: 1; background: #e8e8e4; border-radius: 4px; height: 18px; }
+    .bar-fill { background: #e05a00; border-radius: 4px; height: 18px; min-width: 4px; }
+    .bar-value { font-size: 0.85rem; color: #666; width: 60px; }
+    .empty { color: #999; font-style: italic; }
+    .sessions { margin-top: 32px; }
+    .session-item { border-bottom: 1px solid #eee; padding: 10px 0; display: flex; gap: 16px; font-size: 0.9rem; }
+    .mood { font-size: 0.8rem; padding: 2px 8px; border-radius: 12px; background: #f0ede8; color: #555; }
+    a.button { display: inline-block; margin-top: 24px; padding: 10px 20px; background: #1a1a1a; color: #fff; text-decoration: none; border-radius: 4px; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <h1>StudyPulse</h1>
+  <p class="streak">Current streak: <span>{{ streak }} day{% if streak != 1 %}s{% endif %}</span></p>
+
+  <h2>This week</h2>
+  {% if summary %}
+    {% set max_minutes = summary.values() | max %}
+    {% for subject, minutes in summary.items() %}
+    <div class="bar-row">
+      <div class="bar-label" title="{{ subject }}">{{ subject }}</div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width: {{ (minutes / max_minutes * 100) | int }}%"></div>
+      </div>
+      <div class="bar-value">{{ (minutes / 60) | round(1) }}h</div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <p class="empty">No sessions logged this week.</p>
+  {% endif %}
+
+  <div class="sessions">
+    <h2>All sessions</h2>
+    {% if sessions %}
+      {% for s in sessions | reverse %}
+      <div class="session-item">
+        <span>{{ s.date }}</span>
+        <span><strong>{{ s.subject }}</strong></span>
+        <span>{{ s.duration_minutes }} min</span>
+        <span class="mood">{{ s.mood }}</span>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p class="empty">No sessions yet.</p>
+    {% endif %}
+  </div>
+
+  <a class="button" href="/add">+ Log session</a>
+</body>
+</html>
